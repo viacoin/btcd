@@ -22,8 +22,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/wire"
 )
 
 // AddrManager provides a concurrency safe address manager for caching potential

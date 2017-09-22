@@ -12,12 +12,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/roasbeef/btcd/blockchain"
-	"github.com/roasbeef/btcd/btcec"
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/txscript"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/blockchain"
+	"github.com/viacoin/viad/btcec"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/txscript"
+	"github.com/viacoin/viad/wire"
 	"github.com/roasbeef/btcutil"
 )
 

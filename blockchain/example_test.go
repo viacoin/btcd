@@ -10,10 +10,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/roasbeef/btcd/blockchain"
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/database"
-	_ "github.com/roasbeef/btcd/database/ffldb"
+	"github.com/viacoin/viad/blockchain"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/database"
+	_ "github.com/viacoin/viad/database/ffldb"
 	"github.com/roasbeef/btcutil"
 )
 

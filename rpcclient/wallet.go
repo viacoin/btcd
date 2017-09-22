@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/roasbeef/btcd/btcjson"
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/btcjson"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/wire"
 	"github.com/roasbeef/btcutil"
 )
 
@@ -2187,7 +2187,7 @@ func (c *Client) ImportPubKeyRescan(pubKey string, rescan bool) error {
 // Miscellaneous Functions
 // ***********************
 
-// NOTE: While getinfo is implemented here (in wallet.go), a btcd chain server
+// NOTE: While getinfo is implemented here (in wallet.go), a viad chain server
 // will respond to getinfo requests as well, excluding any wallet information.
 
 // FutureGetInfoResult is a future promise to deliver the result of a

@@ -11,9 +11,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/database"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/database"
+	"github.com/viacoin/viad/wire"
 )
 
 // TestErrNotInMainChain ensures the functions related to errNotInMainChain work

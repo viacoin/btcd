@@ -5,8 +5,8 @@
 package mempool
 
 import (
-	"github.com/roasbeef/btcd/blockchain"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/blockchain"
+	"github.com/viacoin/viad/wire"
 )
 
 // RuleError identifies a rule violation.  It is used to indicate that

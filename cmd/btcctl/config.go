@@ -13,7 +13,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/roasbeef/btcd/btcjson"
+	"github.com/viacoin/viad/btcjson"
 	"github.com/roasbeef/btcutil"
 	flags "github.com/jessevdk/go-flags"
 )
@@ -26,12 +26,12 @@ const (
 )
 
 var (
-	btcdHomeDir           = btcutil.AppDataDir("btcd", false)
+	viadHomeDir           = btcutil.AppDataDir("viad", false)
 	btcctlHomeDir         = btcutil.AppDataDir("btcctl", false)
 	btcwalletHomeDir      = btcutil.AppDataDir("btcwallet", false)
 	defaultConfigFile     = filepath.Join(btcctlHomeDir, "btcctl.conf")
 	defaultRPCServer      = "localhost"
-	defaultRPCCertFile    = filepath.Join(btcdHomeDir, "rpc.cert")
+	defaultRPCCertFile    = filepath.Join(viadHomeDir, "rpc.cert")
 	defaultWalletCertFile = filepath.Join(btcwalletHomeDir, "rpc.cert")
 )
 
@@ -216,7 +216,7 @@ func loadConfig() (*config, []string, error) {
 		if preCfg.Wallet {
 			serverConfigPath = filepath.Join(btcwalletHomeDir, "btcwallet.conf")
 		} else {
-			serverConfigPath = filepath.Join(btcdHomeDir, "btcd.conf")
+			serverConfigPath = filepath.Join(viadHomeDir, "viad.conf")
 		}
 
 		err := createDefaultConfigFile(preCfg.ConfigFile, serverConfigPath)
@@ -280,7 +280,7 @@ func loadConfig() (*config, []string, error) {
 }
 
 // createDefaultConfig creates a basic config file at the given destination path.
-// For this it tries to read the config file for the RPC server (either btcd or
+// For this it tries to read the config file for the RPC server (either viad or
 // btcwallet), and extract the RPC user and password from it.
 func createDefaultConfigFile(destinationPath, serverConfigPath string) error {
 	// Read the RPC server config

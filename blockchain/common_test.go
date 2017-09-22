@@ -14,12 +14,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/database"
-	_ "github.com/roasbeef/btcd/database/ffldb"
-	"github.com/roasbeef/btcd/txscript"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/database"
+	_ "github.com/viacoin/viad/database/ffldb"
+	"github.com/viacoin/viad/txscript"
+	"github.com/viacoin/viad/wire"
 	"github.com/roasbeef/btcutil"
 )
 
@@ -59,7 +59,7 @@ func isSupportedDbType(dbType string) bool {
 
 // loadBlocks reads files containing bitcoin block data (gzipped but otherwise
 // in the format bitcoind writes) from disk and returns them as an array of
-// btcutil.Block.  This is largely borrowed from the test code in btcdb.
+// btcutil.Block.  This is largely borrowed from the test code in viadb.
 func loadBlocks(filename string) (blocks []*btcutil.Block, err error) {
 	filename = filepath.Join("testdata/", filename)
 

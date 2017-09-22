@@ -8,7 +8,7 @@
 package database
 
 import (
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
+	"github.com/viacoin/viad/chaincfg/chainhash"
 	"github.com/roasbeef/btcutil"
 )
 

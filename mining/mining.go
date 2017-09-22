@@ -10,11 +10,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/roasbeef/btcd/blockchain"
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/txscript"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/blockchain"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/txscript"
+	"github.com/viacoin/viad/wire"
 	"github.com/roasbeef/btcutil"
 )
 
@@ -29,8 +29,8 @@ const (
 
 	// CoinbaseFlags is added to the coinbase script of a generated block
 	// and is used to monitor BIP16 support as well as blocks that are
-	// generated via btcd.
-	CoinbaseFlags = "/P2SH/btcd/"
+	// generated via viad.
+	CoinbaseFlags = "/P2SH/viad/"
 )
 
 // TxDesc is a descriptor about a transaction in a transaction source along with

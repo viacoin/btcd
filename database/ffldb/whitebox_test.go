@@ -17,9 +17,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/database"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/database"
+	"github.com/viacoin/viad/wire"
 	"github.com/roasbeef/btcutil"
 	"github.com/btcsuite/goleveldb/leveldb"
 	ldberrors "github.com/btcsuite/goleveldb/leveldb/errors"

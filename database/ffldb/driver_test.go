@@ -12,9 +12,9 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/database"
-	"github.com/roasbeef/btcd/database/ffldb"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/database"
+	"github.com/viacoin/viad/database/ffldb"
 	"github.com/roasbeef/btcutil"
 )
 

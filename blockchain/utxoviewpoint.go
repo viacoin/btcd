@@ -7,9 +7,9 @@ package blockchain
 import (
 	"fmt"
 
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/database"
-	"github.com/roasbeef/btcd/txscript"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/database"
+	"github.com/viacoin/viad/txscript"
 	"github.com/roasbeef/btcutil"
 )
 

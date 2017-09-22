@@ -9,9 +9,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/peer"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/peer"
+	"github.com/viacoin/viad/wire"
 )
 
 // mockRemotePeer creates a basic inbound peer listening on the simnet port for

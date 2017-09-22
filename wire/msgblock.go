@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
+	"github.com/viacoin/viad/chaincfg/chainhash"
 )
 
 // defaultTransactionAlloc is the default size used for the backing array

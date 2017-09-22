@@ -8,9 +8,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/roasbeef/btcd/btcec"
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/btcec"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/wire"
 	"github.com/roasbeef/btcutil"
 )
 

@@ -9,15 +9,15 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/roasbeef/btcd/blockchain"
-	"github.com/roasbeef/btcd/blockchain/indexers"
-	"github.com/roasbeef/btcd/database"
-	"github.com/roasbeef/btcd/limits"
+	"github.com/viacoin/viad/blockchain"
+	"github.com/viacoin/viad/blockchain/indexers"
+	"github.com/viacoin/viad/database"
+	"github.com/viacoin/viad/limits"
 	"github.com/btcsuite/btclog"
 )
 
 const (
-	// blockDbNamePrefix is the prefix for the btcd block database.
+	// blockDbNamePrefix is the prefix for the viad block database.
 	blockDbNamePrefix = "blocks"
 )
 

@@ -11,11 +11,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/roasbeef/btcd/blockchain"
-	"github.com/roasbeef/btcd/blockchain/indexers"
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/database"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/blockchain"
+	"github.com/viacoin/viad/blockchain/indexers"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/database"
+	"github.com/viacoin/viad/wire"
 	"github.com/roasbeef/btcutil"
 )
 

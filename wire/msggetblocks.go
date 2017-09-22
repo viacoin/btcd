@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
+	"github.com/viacoin/viad/chaincfg/chainhash"
 )
 
 // MaxBlockLocatorsPerMsg is the maximum number of block locator hashes allowed

@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/wire"
 )
 
 // TestMruInventoryMap ensures the MruInventoryMap behaves as expected including

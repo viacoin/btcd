@@ -9,8 +9,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/roasbeef/btcd/btcjson"
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
+	"github.com/viacoin/viad/btcjson"
+	"github.com/viacoin/viad/chaincfg/chainhash"
 	"github.com/roasbeef/btcutil"
 )
 

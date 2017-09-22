@@ -22,19 +22,19 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/roasbeef/btcd/addrmgr"
-	"github.com/roasbeef/btcd/blockchain"
-	"github.com/roasbeef/btcd/blockchain/indexers"
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/connmgr"
-	"github.com/roasbeef/btcd/database"
-	"github.com/roasbeef/btcd/mempool"
-	"github.com/roasbeef/btcd/mining"
-	"github.com/roasbeef/btcd/mining/cpuminer"
-	"github.com/roasbeef/btcd/peer"
-	"github.com/roasbeef/btcd/txscript"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/addrmgr"
+	"github.com/viacoin/viad/blockchain"
+	"github.com/viacoin/viad/blockchain/indexers"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/connmgr"
+	"github.com/viacoin/viad/database"
+	"github.com/viacoin/viad/mempool"
+	"github.com/viacoin/viad/mining"
+	"github.com/viacoin/viad/mining/cpuminer"
+	"github.com/viacoin/viad/peer"
+	"github.com/viacoin/viad/txscript"
+	"github.com/viacoin/viad/wire"
 	"github.com/roasbeef/btcutil"
 	"github.com/roasbeef/btcutil/bloom"
 )
@@ -61,7 +61,7 @@ const (
 var (
 	// userAgentName is the user agent name and is used to help identify
 	// ourselves to other bitcoin peers.
-	userAgentName = "btcd"
+	userAgentName = "viad"
 
 	// userAgentVersion is the user agent version and is used to help
 	// identify ourselves to other bitcoin peers.
@@ -1794,7 +1794,7 @@ func (s *server) peerHandler() {
 	if !cfg.DisableDNSSeed {
 		// Add peers discovered through DNS to the address manager.
 		connmgr.SeedFromDNS(activeNetParams.Params, defaultRequiredServices,
-			btcdLookup, func(addrs []*wire.NetAddress) {
+			viadLookup, func(addrs []*wire.NetAddress) {
 				// Bitcoind uses a lookup of the dns seeder here. This
 				// is rather strange since the values looked up by the
 				// DNS seed lookups will vary quite a lot.
@@ -2173,7 +2173,7 @@ out:
 			// listen port?
 			// XXX this assumes timeout is in seconds.
 			listenPort, err := s.nat.AddPortMapping("tcp", int(lport), int(lport),
-				"btcd listen port", 20*60)
+				"viad listen port", 20*60)
 			if err != nil {
 				srvrLog.Warnf("can't add UPnP port mapping: %v", err)
 			}
@@ -2270,7 +2270,7 @@ func setupRPCListeners() ([]net.Listener, error) {
 	return listeners, nil
 }
 
-// newServer returns a new btcd server configured to listen on addr for the
+// newServer returns a new viad server configured to listen on addr for the
 // bitcoin network type specified by chainParams.  Use start to begin accepting
 // connections from peers.
 func newServer(listenAddrs []string, db database.DB, chainParams *chaincfg.Params) (*server, error) {
@@ -2282,7 +2282,7 @@ func newServer(listenAddrs []string, db database.DB, chainParams *chaincfg.Param
 		services &^= wire.SFNodeCF
 	}
 
-	amgr := addrmgr.New(cfg.DataDir, btcdLookup)
+	amgr := addrmgr.New(cfg.DataDir, viadLookup)
 
 	var listeners []net.Listener
 	var nat NAT
@@ -2605,7 +2605,7 @@ func newServer(listenAddrs []string, db database.DB, chainParams *chaincfg.Param
 		OnAccept:       s.inboundPeerConnected,
 		RetryDuration:  connectionRetryInterval,
 		TargetOutbound: uint32(targetOutbound),
-		Dial:           btcdDial,
+		Dial:           viadDial,
 		OnConnection:   s.outboundPeerConnected,
 		GetNewAddress:  newAddressFunc,
 	})
@@ -2706,7 +2706,7 @@ func addrStringToNetAddr(addr string) (net.Addr, error) {
 	}
 
 	// Attempt to look up an IP address associated with the parsed host.
-	ips, err := btcdLookup(host)
+	ips, err := viadLookup(host)
 	if err != nil {
 		return nil, err
 	}

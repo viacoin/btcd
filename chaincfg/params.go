@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/wire"
 )
 
 // These variables are the chain proof-of-work limit parameters for each default

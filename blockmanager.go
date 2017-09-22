@@ -11,13 +11,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/roasbeef/btcd/blockchain"
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/database"
-	"github.com/roasbeef/btcd/mempool"
-	peerpkg "github.com/roasbeef/btcd/peer"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/blockchain"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/database"
+	"github.com/viacoin/viad/mempool"
+	peerpkg "github.com/viacoin/viad/peer"
+	"github.com/viacoin/viad/wire"
 	"github.com/roasbeef/btcutil"
 )
 

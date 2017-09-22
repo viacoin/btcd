@@ -8,8 +8,8 @@ import (
 	"net"
 	"testing"
 
-	"github.com/roasbeef/btcd/addrmgr"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/addrmgr"
+	"github.com/viacoin/viad/wire"
 )
 
 // TestIPTypes ensures the various functions which determine the type of an IP

@@ -7,10 +7,10 @@ package indexers
 import (
 	"errors"
 
-	"github.com/roasbeef/btcd/blockchain"
-	"github.com/roasbeef/btcd/chaincfg"
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/database"
+	"github.com/viacoin/viad/blockchain"
+	"github.com/viacoin/viad/chaincfg"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/database"
 	"github.com/roasbeef/btcutil"
 	"github.com/roasbeef/btcutil/gcs"
 	"github.com/roasbeef/btcutil/gcs/builder"

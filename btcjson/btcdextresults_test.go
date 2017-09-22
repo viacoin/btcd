@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/roasbeef/btcd/btcjson"
+	"github.com/viacoin/viad/btcjson"
 )
 
 // TestBtcdExtCustomResults ensures any results that have custom marshalling

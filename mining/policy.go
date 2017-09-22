@@ -5,8 +5,8 @@
 package mining
 
 import (
-	"github.com/roasbeef/btcd/blockchain"
-	"github.com/roasbeef/btcd/wire"
+	"github.com/viacoin/viad/blockchain"
+	"github.com/viacoin/viad/wire"
 	"github.com/roasbeef/btcutil"
 )
 

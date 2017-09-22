@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/roasbeef/btcd/chaincfg/chainhash"
-	"github.com/roasbeef/btcd/database"
+	"github.com/viacoin/viad/chaincfg/chainhash"
+	"github.com/viacoin/viad/database"
 	"github.com/roasbeef/btcutil"
 )
 

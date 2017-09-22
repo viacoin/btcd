@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/roasbeef/btcd/btcjson"
+	"github.com/viacoin/viad/btcjson"
 )
 
 // TestBtcWalletExtCmds tests all of the btcwallet extended commands marshal and
