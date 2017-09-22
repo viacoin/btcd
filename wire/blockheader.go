@@ -9,7 +9,10 @@ import (
 	"io"
 	"time"
 
+	"golang.org/x/crypto/scrypt"
+
 	"github.com/viacoin/viad/chaincfg/chainhash"
+	"golang.org/x/crypto/scrypt"
 )
 
 // MaxBlockHeaderPayload is the maximum number of bytes a block header can be.
@@ -54,6 +57,25 @@ func (h *BlockHeader) BlockHash() chainhash.Hash {
 	_ = writeBlockHeader(buf, 0, h)
 
 	return chainhash.DoubleHashH(buf.Bytes())
+}
+
+// PoWHash returns the Viacoin scrypt hash of this block header.
+// This value is used to check the poW on block advertised network.
+func (h *BlockHeader) PoWHash() (*chainhash.Hash, error) {
+	var powHash chainhash.Hash
+
+	buf := bytes.NewBuffer(make([]byte, 0, MaxBlockHeaderPayload))
+	_ = writeBlockHeader(buf, 0, h)
+
+	scryptHash, err := scrypt.Key(buf.Bytes(), buf.Bytes(), 1024, 1, 1, 32)
+	if err != nil {
+		return nil, err
+
+	}
+
+	copy(powHash[:], scryptHash)
+
+	return &powHash, nil
 }
 
 // BtcDecode decodes r using the bitcoin protocol encoding into the receiver.
