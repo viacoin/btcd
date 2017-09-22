@@ -13,9 +13,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/viacoin/viad/btcjson"
-	"github.com/viacoin/viautil"
+	"github.com/Roasbeef/btcutil"
+
 	flags "github.com/jessevdk/go-flags"
+	"github.com/viacoin/viad/btcjson"
 )
 
 const (
@@ -26,13 +27,13 @@ const (
 )
 
 var (
-	viadHomeDir           = viautil.AppDataDir("viad", false)
-	btcctlHomeDir         = viautil.AppDataDir("btcctl", false)
-	btcwalletHomeDir      = viautil.AppDataDir("btcwallet", false)
-	defaultConfigFile     = filepath.Join(btcctlHomeDir, "btcctl.conf")
+	viadHomeDir           = btcutil.AppDataDir("viad", false)
+	viactlHomeDir         = btcutil.AppDataDir("viactl", false)
+	viawalletHomeDir      = btcutil.AppDataDir("viawallet", false)
+	defaultConfigFile     = filepath.Join(btcctlHomeDir, "viactl.conf")
 	defaultRPCServer      = "localhost"
 	defaultRPCCertFile    = filepath.Join(viadHomeDir, "rpc.cert")
-	defaultWalletCertFile = filepath.Join(btcwalletHomeDir, "rpc.cert")
+	defaultWalletCertFile = filepath.Join(viawalletHomeDir, "rpc.cert")
 )
 
 // listCommands categorizes and lists all of the usable commands along with
@@ -88,7 +89,7 @@ func listCommands() {
 	}
 }
 
-// config defines the configuration options for btcctl.
+// config defines the configuration options for viactl.
 //
 // See loadConfig for details on the configuration load process.
 type config struct {
@@ -118,9 +119,9 @@ func normalizeAddress(addr string, useTestNet3, useSimNet, useWallet bool) strin
 		switch {
 		case useTestNet3:
 			if useWallet {
-				defaultPort = "18332"
+				defaultPort = "25332"
 			} else {
-				defaultPort = "18334"
+				defaultPort = "25334"
 			}
 		case useSimNet:
 			if useWallet {
@@ -146,7 +147,7 @@ func normalizeAddress(addr string, useTestNet3, useSimNet, useWallet bool) strin
 func cleanAndExpandPath(path string) string {
 	// Expand initial ~ to OS specific home directory.
 	if strings.HasPrefix(path, "~") {
-		homeDir := filepath.Dir(btcctlHomeDir)
+		homeDir := filepath.Dir(viactlHomeDir)
 		path = strings.Replace(path, "~", homeDir, 1)
 	}
 
@@ -214,7 +215,7 @@ func loadConfig() (*config, []string, error) {
 		// Use config file for RPC server to create default btcctl config
 		var serverConfigPath string
 		if preCfg.Wallet {
-			serverConfigPath = filepath.Join(btcwalletHomeDir, "btcwallet.conf")
+			serverConfigPath = filepath.Join(viawalletHomeDir, "viawallet.conf")
 		} else {
 			serverConfigPath = filepath.Join(viadHomeDir, "viad.conf")
 		}
