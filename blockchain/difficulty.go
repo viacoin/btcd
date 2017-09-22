@@ -251,6 +251,14 @@ func (b *BlockChain) calcNextRequiredDifficulty(lastNode *blockNode, newBlockTim
 		return lastNode.bits, nil
 	}
 
+	// Viacoin: This fixes an issue where 51% can change difficulty at will.
+	// Go back the full period unless it's the first retarget
+	// after genesis
+	blocksPerRetarget := b.blocksPerRetarget - 1 // b.blocksPerRetarget = int32(targetTimespan / targetTimePerBlock)
+	if lastNode.height+1 != b.blocksPerRetarget {
+		blocksPerRetarget = b.blocksPerRetarget
+	}
+
 	// Get the block node at the previous retarget (targetTimespan days
 	// worth of blocks).
 	firstNode := lastNode.RelativeAncestor(b.blocksPerRetarget - 1)
