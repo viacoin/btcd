@@ -45,7 +45,7 @@ var regressionNetParams = params{
 // reference implementation - see the mainNetParams comment for details.
 var testNet3Params = params{
 	Params:  &chaincfg.TestNet3Params,
-	rpcPort: "18334",
+	rpcPort: "25225",
 }
 
 // simNetParams contains parameters specific to the simulation test network
