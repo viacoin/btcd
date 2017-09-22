@@ -11,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/btcsuite/btclog"
+	"github.com/jrick/logrotate/rotator"
 	"github.com/viacoin/viad/addrmgr"
 	"github.com/viacoin/viad/blockchain"
 	"github.com/viacoin/viad/blockchain/indexers"
@@ -21,8 +23,6 @@ import (
 	"github.com/viacoin/viad/mining/cpuminer"
 	"github.com/viacoin/viad/peer"
 	"github.com/viacoin/viad/txscript"
-	"github.com/btcsuite/btclog"
-	"github.com/jrick/logrotate/rotator"
 )
 
 // logWriter implements an io.Writer that outputs to both standard output and
@@ -117,13 +117,13 @@ func initLogRotator(logFile string) {
 		fmt.Fprintf(os.Stderr, "failed to create log directory: %v\n", err)
 		os.Exit(1)
 	}
-	pr, pw := io.Pipe()
 	r, err := rotator.New(pr, logFile, 10*1024, false, 3)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to create file rotator: %v\n", err)
 		os.Exit(1)
 	}
 
+	pr, pw := io.Pipe()
 	go r.Run()
 
 	logRotator = r
