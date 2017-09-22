@@ -26,7 +26,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 	"github.com/viacoin/viad/chaincfg"
 )
 
@@ -47,7 +47,7 @@ func main() {
 
 	// Create and print new payment address, specific to the active network.
 	pubKeyHash := make([]byte, 20)
-	addr, err := btcutil.NewAddressPubKeyHash(pubKeyHash, chainParams)
+	addr, err := viautil.NewAddressPubKeyHash(pubKeyHash, chainParams)
 	if err != nil {
 		log.Fatal(err)
 	}

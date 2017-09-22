@@ -17,7 +17,7 @@ import (
 
 	"github.com/viacoin/viad/chaincfg/chainhash"
 	"github.com/viacoin/viad/wire"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 )
 
 // scriptTestName returns a descriptive test name for the given reference script
@@ -347,7 +347,7 @@ func testScripts(t *testing.T, tests [][]interface{}, useSigCache bool) {
 
 		var (
 			witness  wire.TxWitness
-			inputAmt btcutil.Amount
+			inputAmt viautil.Amount
 		)
 
 		// When the first field of the test data is a slice it contains
@@ -367,7 +367,7 @@ func testScripts(t *testing.T, tests [][]interface{}, useSigCache bool) {
 				continue
 			}
 
-			inputAmt, err = btcutil.NewAmount(witnessData[len(witnessData)-1].(float64))
+			inputAmt, err = viautil.NewAmount(witnessData[len(witnessData)-1].(float64))
 			if err != nil {
 				t.Errorf("%s: can't parse input amt: %v",
 					name, err)
@@ -547,7 +547,7 @@ testloop:
 			continue
 		}
 
-		tx, err := btcutil.NewTxFromBytes(serializedTx)
+		tx, err := viautil.NewTxFromBytes(serializedTx)
 		if err != nil {
 			t.Errorf("bad test (arg 2 not msgtx %v) %d: %v", err,
 				i, test)
@@ -702,7 +702,7 @@ testloop:
 			continue
 		}
 
-		tx, err := btcutil.NewTxFromBytes(serializedTx)
+		tx, err := viautil.NewTxFromBytes(serializedTx)
 		if err != nil {
 			t.Errorf("bad test (arg 2 not msgtx %v) %d: %v", err,
 				i, test)

@@ -7,7 +7,7 @@ package mining
 import (
 	"github.com/viacoin/viad/blockchain"
 	"github.com/viacoin/viad/wire"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 )
 
 const (
@@ -44,7 +44,7 @@ type Policy struct {
 	// TxMinFreeFee is the minimum fee in Satoshi/1000 bytes that is
 	// required for a transaction to be treated as free for mining purposes
 	// (block template generation).
-	TxMinFreeFee btcutil.Amount
+	TxMinFreeFee viautil.Amount
 }
 
 // minInt is a helper function to return the minimum of two ints.  This avoids

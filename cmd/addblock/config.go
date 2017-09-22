@@ -13,7 +13,7 @@ import (
 	"github.com/viacoin/viad/database"
 	_ "github.com/viacoin/viad/database/ffldb"
 	"github.com/viacoin/viad/wire"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 	flags "github.com/jessevdk/go-flags"
 )
 
@@ -24,7 +24,7 @@ const (
 )
 
 var (
-	viadHomeDir     = btcutil.AppDataDir("viad", false)
+	viadHomeDir     = viautil.AppDataDir("viad", false)
 	defaultDataDir  = filepath.Join(viadHomeDir, "data")
 	knownDbTypes    = database.SupportedDrivers()
 	activeNetParams = &chaincfg.MainNetParams

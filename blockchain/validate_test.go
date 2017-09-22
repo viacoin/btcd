@@ -13,7 +13,7 @@ import (
 	"github.com/viacoin/viad/chaincfg"
 	"github.com/viacoin/viad/chaincfg/chainhash"
 	"github.com/viacoin/viad/wire"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 )
 
 // TestSequenceLocksActive tests the SequenceLockActive function to ensure it
@@ -77,7 +77,7 @@ func TestCheckConnectBlock(t *testing.T) {
 
 	// The genesis block should fail to connect since it's already inserted.
 	genesisBlock := chaincfg.MainNetParams.GenesisBlock
-	err = chain.CheckConnectBlock(btcutil.NewBlock(genesisBlock))
+	err = chain.CheckConnectBlock(viautil.NewBlock(genesisBlock))
 	if err == nil {
 		t.Errorf("CheckConnectBlock: Did not received expected error")
 	}
@@ -87,7 +87,7 @@ func TestCheckConnectBlock(t *testing.T) {
 // as expected.
 func TestCheckBlockSanity(t *testing.T) {
 	powLimit := chaincfg.MainNetParams.PowLimit
-	block := btcutil.NewBlock(&Block100000)
+	block := viautil.NewBlock(&Block100000)
 	timeSource := NewMedianTime()
 	err := CheckBlockSanity(block, powLimit, timeSource)
 	if err != nil {
@@ -148,7 +148,7 @@ func TestCheckSerializedHeight(t *testing.T) {
 	for i, test := range tests {
 		msgTx := coinbaseTx.Copy()
 		msgTx.TxIn[0].SignatureScript = test.sigScript
-		tx := btcutil.NewTx(msgTx)
+		tx := viautil.NewTx(msgTx)
 
 		err := checkSerializedHeight(tx, test.wantHeight)
 		if reflect.TypeOf(err) != reflect.TypeOf(test.err) {

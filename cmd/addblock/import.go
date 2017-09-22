@@ -16,7 +16,7 @@ import (
 	"github.com/viacoin/viad/chaincfg/chainhash"
 	"github.com/viacoin/viad/database"
 	"github.com/viacoin/viad/wire"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 )
 
 var zeroHash = chainhash.Hash{}
@@ -94,7 +94,7 @@ func (bi *blockImporter) readBlock() ([]byte, error) {
 // with any potential errors.
 func (bi *blockImporter) processBlock(serializedBlock []byte) (bool, error) {
 	// Deserialize the block which includes checks for malformed blocks.
-	block, err := btcutil.NewBlockFromBytes(serializedBlock)
+	block, err := viautil.NewBlockFromBytes(serializedBlock)
 	if err != nil {
 		return false, err
 	}

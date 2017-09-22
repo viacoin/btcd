@@ -14,7 +14,7 @@ import (
 	"strings"
 
 	"github.com/viacoin/viad/btcjson"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 	flags "github.com/jessevdk/go-flags"
 )
 
@@ -26,9 +26,9 @@ const (
 )
 
 var (
-	viadHomeDir           = btcutil.AppDataDir("viad", false)
-	btcctlHomeDir         = btcutil.AppDataDir("btcctl", false)
-	btcwalletHomeDir      = btcutil.AppDataDir("btcwallet", false)
+	viadHomeDir           = viautil.AppDataDir("viad", false)
+	btcctlHomeDir         = viautil.AppDataDir("btcctl", false)
+	btcwalletHomeDir      = viautil.AppDataDir("btcwallet", false)
 	defaultConfigFile     = filepath.Join(btcctlHomeDir, "btcctl.conf")
 	defaultRPCServer      = "localhost"
 	defaultRPCCertFile    = filepath.Join(viadHomeDir, "rpc.cert")

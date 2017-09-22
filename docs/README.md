@@ -290,7 +290,7 @@ information.
     * [mempool](https://github.com/viacoin/viad/tree/master/mempool) -
       Package mempool provides a policy-enforced pool of unmined bitcoin
       transactions.
-    * [btcutil](https://github.com/roasbeef/btcutil) - Provides Bitcoin-specific
+    * [viautil](https://github.com/viacoin/viautil) - Provides Bitcoin-specific
       convenience functions and types
     * [chainhash](https://github.com/viacoin/viad/tree/master/chaincfg/chainhash) -
       Provides a generic hash type and associated functions that allows the

@@ -14,7 +14,7 @@ import (
 	"github.com/viacoin/viad/chaincfg"
 	"github.com/viacoin/viad/database"
 	_ "github.com/viacoin/viad/database/ffldb"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 )
 
 // This example demonstrates how to create a new chain instance and use
@@ -58,7 +58,7 @@ func ExampleBlockChain_ProcessBlock() {
 	// Process a block.  For this example, we are going to intentionally
 	// cause an error by trying to process the genesis block which already
 	// exists.
-	genesisBlock := btcutil.NewBlock(chaincfg.MainNetParams.GenesisBlock)
+	genesisBlock := viautil.NewBlock(chaincfg.MainNetParams.GenesisBlock)
 	isMainChain, isOrphan, err := chain.ProcessBlock(genesisBlock,
 		blockchain.BFNone)
 	if err != nil {

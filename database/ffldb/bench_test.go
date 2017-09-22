@@ -11,7 +11,7 @@ import (
 
 	"github.com/viacoin/viad/chaincfg"
 	"github.com/viacoin/viad/database"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 )
 
 // BenchmarkBlockHeader benchmarks how long it takes to load the mainnet genesis
@@ -28,7 +28,7 @@ func BenchmarkBlockHeader(b *testing.B) {
 	defer os.RemoveAll(dbPath)
 	defer db.Close()
 	err = db.Update(func(tx database.Tx) error {
-		block := btcutil.NewBlock(chaincfg.MainNetParams.GenesisBlock)
+		block := viautil.NewBlock(chaincfg.MainNetParams.GenesisBlock)
 		return tx.StoreBlock(block)
 	})
 	if err != nil {
@@ -69,7 +69,7 @@ func BenchmarkBlock(b *testing.B) {
 	defer os.RemoveAll(dbPath)
 	defer db.Close()
 	err = db.Update(func(tx database.Tx) error {
-		block := btcutil.NewBlock(chaincfg.MainNetParams.GenesisBlock)
+		block := viautil.NewBlock(chaincfg.MainNetParams.GenesisBlock)
 		return tx.StoreBlock(block)
 	})
 	if err != nil {

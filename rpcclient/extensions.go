@@ -15,7 +15,7 @@ import (
 	"github.com/viacoin/viad/btcjson"
 	"github.com/viacoin/viad/chaincfg/chainhash"
 	"github.com/viacoin/viad/wire"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 )
 
 // FutureDebugLevelResult is a future promise to deliver the result of a
@@ -128,7 +128,7 @@ func (r FutureListAddressTransactionsResult) Receive() ([]btcjson.ListTransactio
 // See ListAddressTransactions for the blocking version and more details.
 //
 // NOTE: This is a viad extension.
-func (c *Client) ListAddressTransactionsAsync(addresses []btcutil.Address, account string) FutureListAddressTransactionsResult {
+func (c *Client) ListAddressTransactionsAsync(addresses []viautil.Address, account string) FutureListAddressTransactionsResult {
 	// Convert addresses to strings.
 	addrs := make([]string, 0, len(addresses))
 	for _, addr := range addresses {
@@ -142,7 +142,7 @@ func (c *Client) ListAddressTransactionsAsync(addresses []btcutil.Address, accou
 // with the provided addresses.
 //
 // NOTE: This is a btcwallet extension.
-func (c *Client) ListAddressTransactions(addresses []btcutil.Address, account string) ([]btcjson.ListTransactionsResult, error) {
+func (c *Client) ListAddressTransactions(addresses []viautil.Address, account string) ([]btcjson.ListTransactionsResult, error) {
 	return c.ListAddressTransactionsAsync(addresses, account).Receive()
 }
 

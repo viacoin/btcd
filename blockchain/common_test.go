@@ -20,7 +20,7 @@ import (
 	_ "github.com/viacoin/viad/database/ffldb"
 	"github.com/viacoin/viad/txscript"
 	"github.com/viacoin/viad/wire"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 )
 
 const (
@@ -59,8 +59,8 @@ func isSupportedDbType(dbType string) bool {
 
 // loadBlocks reads files containing bitcoin block data (gzipped but otherwise
 // in the format bitcoind writes) from disk and returns them as an array of
-// btcutil.Block.  This is largely borrowed from the test code in viadb.
-func loadBlocks(filename string) (blocks []*btcutil.Block, err error) {
+// viautil.Block.  This is largely borrowed from the test code in viadb.
+func loadBlocks(filename string) (blocks []*viautil.Block, err error) {
 	filename = filepath.Join("testdata/", filename)
 
 	var network = wire.MainNet
@@ -79,7 +79,7 @@ func loadBlocks(filename string) (blocks []*btcutil.Block, err error) {
 	}
 	defer fi.Close()
 
-	var block *btcutil.Block
+	var block *viautil.Block
 
 	err = nil
 	for height := int64(1); err == nil; height++ {
@@ -105,7 +105,7 @@ func loadBlocks(filename string) (blocks []*btcutil.Block, err error) {
 		// read block
 		dr.Read(rbytes)
 
-		block, err = btcutil.NewBlockFromBytes(rbytes)
+		block, err = viautil.NewBlockFromBytes(rbytes)
 		if err != nil {
 			return
 		}

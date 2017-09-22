@@ -12,7 +12,7 @@ import (
 
 	"github.com/viacoin/viad/rpcclient"
 	"github.com/viacoin/viad/wire"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	// for notifications.  See the documentation of the rpcclient
 	// NotificationHandlers type for more details about each handler.
 	ntfnHandlers := rpcclient.NotificationHandlers{
-		OnFilteredBlockConnected: func(height int32, header *wire.BlockHeader, txns []*btcutil.Tx) {
+		OnFilteredBlockConnected: func(height int32, header *wire.BlockHeader, txns []*viautil.Tx) {
 			log.Printf("Block connected: %v (%d) %v",
 				header.BlockHash(), height, header.Timestamp)
 		},
@@ -32,7 +32,7 @@ func main() {
 	}
 
 	// Connect to local viad RPC server using websockets.
-	viadHomeDir := btcutil.AppDataDir("viad", false)
+	viadHomeDir := viautil.AppDataDir("viad", false)
 	certs, err := ioutil.ReadFile(filepath.Join(viadHomeDir, "rpc.cert"))
 	if err != nil {
 		log.Fatal(err)

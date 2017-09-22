@@ -14,7 +14,7 @@ import (
 	"github.com/viacoin/viad/database"
 	_ "github.com/viacoin/viad/database/ffldb"
 	"github.com/viacoin/viad/wire"
-	"github.com/roasbeef/btcutil"
+	"github.com/viacoin/viautil"
 )
 
 // This example demonstrates creating a new database.
@@ -136,7 +136,7 @@ func Example_blockStorageAndRetrieval() {
 	// and example.
 	err = db.Update(func(tx database.Tx) error {
 		genesisBlock := chaincfg.MainNetParams.GenesisBlock
-		return tx.StoreBlock(btcutil.NewBlock(genesisBlock))
+		return tx.StoreBlock(viautil.NewBlock(genesisBlock))
 	})
 	if err != nil {
 		fmt.Println(err)
