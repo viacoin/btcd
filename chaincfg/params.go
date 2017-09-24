@@ -262,23 +262,23 @@ var MainNetParams = Params{
 	//
 	// The miner confirmation window is defined as:
 	//   target proof of work timespan / target proof of work spacing
-	RuleChangeActivationThreshold: 1916, // 95% of MinerConfirmationWindow
-	MinerConfirmationWindow:       2016, //
+	RuleChangeActivationThreshold: 8100,  // 75% of MinerConfirmationWindow
+	MinerConfirmationWindow:       10800, //
 	Deployments: [DefinedDeployments]ConsensusDeployment{
 		DeploymentTestDummy: {
-			BitNumber:  28,
+			BitNumber:  6,
 			StartTime:  1199145601, // January 1, 2008 UTC
 			ExpireTime: 1230767999, // December 31, 2008 UTC
 		},
 		DeploymentCSV: {
 			BitNumber:  0,
-			StartTime:  1462060800, // May 1st, 2016
-			ExpireTime: 1493596800, // May 1st, 2017
+			StartTime:  1498694400, // June 28 2017, 2017 UTC
+			ExpireTime: 1530230400, // June 28 2018, 2018 UTC
 		},
 		DeploymentSegwit: {
 			BitNumber:  1,
-			StartTime:  1479168000, // November 15, 2016 UTC
-			ExpireTime: 1510704000, // November 15, 2017 UTC.
+			StartTime:  1498694400, // June 28 2017, 2017 UTC
+			ExpireTime: 1530230400, // June 28 2018, 2018 UTC
 		},
 	},
 
@@ -428,13 +428,13 @@ var TestNet3Params = Params{
 		},
 		DeploymentCSV: {
 			BitNumber:  0,
-			StartTime:  1456790400, // March 1st, 2016
-			ExpireTime: 1493596800, // May 1st, 2017
+			StartTime:  1494547200, // May 12, 2017
+			ExpireTime: 1526083200, // May 12, 2018
 		},
 		DeploymentSegwit: {
 			BitNumber:  1,
-			StartTime:  1462060800, // May 1, 2016 UTC
-			ExpireTime: 1493596800, // May 1, 2017 UTC.
+			StartTime:  1494547200, // May 12, 2016 UTC
+			ExpireTime: 1526083200, // May 12, 2018 UTC.
 		},
 	},
 
