@@ -97,7 +97,7 @@ address.
 
 ```text
 HiddenServiceDir /var/tor/viad
-HiddenServicePort 8333 127.0.0.1:8333
+HiddenServicePort 5223 127.0.0.1:5223
 ```
 
 Once Tor is configured to provide the hidden service and you have obtained your
