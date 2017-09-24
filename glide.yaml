@@ -1,8 +1,7 @@
 package: github.com/viacoin/viad
 import:
 - package: github.com/btcsuite/btclog
-- package: github.com/viacoin/ltcutil
-  version: a88d7dfb1c02af5dffe005ad21f40c42d9fd5ad0
+- package: github.com/viacoin/viautil
   subpackages:
   - bloom
   - hdkeychain

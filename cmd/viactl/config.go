@@ -29,7 +29,7 @@ var (
 	viadHomeDir           = viautil.AppDataDir("viad", false)
 	viactlHomeDir         = viautil.AppDataDir("viactl", false)
 	viawalletHomeDir      = viautil.AppDataDir("viawallet", false)
-	defaultConfigFile     = filepath.Join(btcctlHomeDir, "viactl.conf")
+	defaultConfigFile     = filepath.Join(viactlHomeDir, "viactl.conf")
 	defaultRPCServer      = "localhost"
 	defaultRPCCertFile    = filepath.Join(viadHomeDir, "rpc.cert")
 	defaultWalletCertFile = filepath.Join(viawalletHomeDir, "rpc.cert")
