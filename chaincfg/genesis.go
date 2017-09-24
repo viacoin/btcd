@@ -80,10 +80,10 @@ var genesisBlock = wire.MsgBlock{
 	Header: wire.BlockHeader{
 		Version:    1,
 		PrevBlock:  chainhash.Hash{},         // 0000000000000000000000000000000000000000000000000000000000000000
-		MerkleRoot: genesisMerkleRoot,        // 4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b
-		Timestamp:  time.Unix(0x495fab29, 0), // 2009-01-03 18:15:05 +0000 UTC
-		Bits:       0x1d00ffff,               // 486604799 [00000000ffff0000000000000000000000000000000000000000000000000000]
-		Nonce:      0x7c2bac1d,               // 2083236893
+		MerkleRoot: genesisMerkleRoot,        // 0317d32e01a2adf6f2ac6f58c7cdaab6c656edc6fdb45986c739290053275200
+		Timestamp:  time.Unix(1405164774, 0), // 2009-01-03 18:15:05 +0000 UTC
+		Bits:       0x1e01ffff,               // 486604799 [00000000ffff0000000000000000000000000000000000000000000000000000]
+		Nonce:      4016033,               // 2083236893
 	},
 	Transactions: []*wire.MsgTx{&genesisCoinbaseTx},
 }
@@ -108,7 +108,7 @@ var regTestGenesisBlock = wire.MsgBlock{
 	Header: wire.BlockHeader{
 		Version:    1,
 		PrevBlock:  chainhash.Hash{},         // 0000000000000000000000000000000000000000000000000000000000000000
-		MerkleRoot: regTestGenesisMerkleRoot, // 4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b
+		MerkleRoot: regTestGenesisMerkleRoot, // 0x0317d32e01a2adf6f2ac6f58c7cdaab6c656edc6fdb45986c739290053275200
 		Timestamp:  time.Unix(1296688602, 0), // 2011-02-02 23:16:42 +0000 UTC
 		Bits:       0x207fffff,               // 545259519 [7fffff0000000000000000000000000000000000000000000000000000000000]
 		Nonce:      2,
