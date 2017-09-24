@@ -32,7 +32,7 @@ var genesisCoinbaseTx = wire.MsgTx{
 				0x65, 0x66, 0x65, 0x39, 0x32, 0x31, 0x38, 0x63,
 				0x31, 0x32, 0x39, 0x30, 0x64, 0x66, 0x66, 0x33,
 				0x36, 0x63, 0x31, 0x66, 0x66, 0x31, 0x32, 0x39,
-				0x65, 0x63, 0x37, 0x32, 0x31, 0x31, 0x61
+				0x65, 0x63, 0x37, 0x32, 0x31, 0x31, 0x61,
 			},
 			Sequence: 0xffffffff,
 		},
@@ -83,7 +83,7 @@ var genesisBlock = wire.MsgBlock{
 		MerkleRoot: genesisMerkleRoot,        // 0317d32e01a2adf6f2ac6f58c7cdaab6c656edc6fdb45986c739290053275200
 		Timestamp:  time.Unix(1405164774, 0), // 2009-01-03 18:15:05 +0000 UTC
 		Bits:       0x1e01ffff,               // 486604799 [00000000ffff0000000000000000000000000000000000000000000000000000]
-		Nonce:      4016033,               // 2083236893
+		Nonce:      4016033,                  // 2083236893
 	},
 	Transactions: []*wire.MsgTx{&genesisCoinbaseTx},
 }
@@ -139,7 +139,7 @@ var testNet3GenesisBlock = wire.MsgBlock{
 		MerkleRoot: testNet3GenesisMerkleRoot, // 4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b
 		Timestamp:  time.Unix(1405168772, 0),  // 2011-02-02 23:16:42 +0000 UTC
 		Bits:       0x1d00ffff,                // 486604799 [00000000ffff0000000000000000000000000000000000000000000000000000]
-		Nonce:      262929,                // 414098458
+		Nonce:      262929,                    // 414098458
 	},
 	Transactions: []*wire.MsgTx{&genesisCoinbaseTx},
 }
