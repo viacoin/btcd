@@ -290,9 +290,9 @@ var MainNetParams = Params{
 	Bech32HRPSegwit: "via", // always via for main net
 
 	// Address encoding magics
-	PubKeyHashAddrID:        0x00, // starts with 1
-	ScriptHashAddrID:        0x05, // starts with 3
-	PrivateKeyID:            0x80, // starts with 5 (uncompressed) or K (compressed)
+	PubKeyHashAddrID:        0x47, // starts with v
+	ScriptHashAddrID:        0x21, // starts with 7
+	PrivateKeyID:            0xC7, // starts with 5 (uncompressed) or K (compressed)
 	WitnessPubKeyHashAddrID: 0x06, // starts with p2
 	WitnessScriptHashAddrID: 0x0A, // starts with 7Xh
 
@@ -302,7 +302,7 @@ var MainNetParams = Params{
 
 	// BIP44 coin type used in the hierarchical deterministic path for
 	// address generation.
-	HDCoinType: 0,
+	HDCoinType: 14,
 }
 
 // RegressionNetParams defines the network parameters for the regression test
