@@ -118,9 +118,9 @@ func normalizeAddress(addr string, useTestNet3, useSimNet, useWallet bool) strin
 		switch {
 		case useTestNet3:
 			if useWallet {
-				defaultPort = "25332"
+				defaultPort = "25222"
 			} else {
-				defaultPort = "25334"
+				defaultPort = "25224"
 			}
 		case useSimNet:
 			if useWallet {
@@ -130,9 +130,9 @@ func normalizeAddress(addr string, useTestNet3, useSimNet, useWallet bool) strin
 			}
 		default:
 			if useWallet {
-				defaultPort = "8332"
+				defaultPort = "5222"
 			} else {
-				defaultPort = "8334"
+				defaultPort = "5224"
 			}
 		}
 
