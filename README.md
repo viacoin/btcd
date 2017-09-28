@@ -3,18 +3,18 @@ viad
 
 [![Build Status](https://travis-ci.org/viacoin/viad.png?branch=master)](https://travis-ci.org/viacoin/viad)
 
-viad is an alternative full node bitcoin implementation written in Go (golang).
+viad is an alternative full node viacoin implementation written in Go (golang).
 
 This project is currently under active development and is in a Beta state.  It
 is extremely stable and has been in production use since October 2013.
 
 It properly downloads, validates, and serves the block chain using the exact
-rules (including consensus bugs) for block acceptance as Bitcoin Core.  We have
+rules (including consensus bugs) for block acceptance as Viacoin Core.  We have
 taken great care to avoid viad causing a fork to the block chain.  It includes a
 full block validation testing framework which contains all of the 'official'
 block acceptance tests (and some additional ones) that is run on every pull
 request to help ensure it properly follows consensus.  Also, it passes all of
-the JSON test data in the Bitcoin Core code.
+the JSON test data in the Viacoin Core code.
 
 It also properly relays newly mined blocks, maintains a transaction pool, and
 relays individual transactions that have not yet made it into a block.  It
@@ -22,13 +22,13 @@ ensures all individual transactions admitted to the pool follow the rules
 required by the block chain and also includes more strict checks which filter
 transactions based on miner requirements ("standard" transactions).
 
-One key difference between viad and Bitcoin Core is that viad does *NOT* include
+One key difference between viad and Viacoin Core is that viad does *NOT* include
 wallet functionality and this was a very intentional design decision.  See the
-blog entry [here](https://blog.conformal.com/viad-not-your-moms-bitcoin-daemon)
+blog entry [here](https://blog.conformal.com/btcd-not-your-moms-bitcoin-daemon)
 for more details.  This means you can't actually make or receive payments
 directly with viad.  That functionality is provided by the
-[btcwallet](https://github.com/btcsuite/btcwallet) and
-[Paymetheus](https://github.com/btcsuite/Paymetheus) (Windows-only) projects
+[btcwallet](https://github.com/viacoin/viawallet) and
+[Paymetheus](https://github.com/viacoin/Paymetheus) (Windows-only) projects
 which are both under active development.
 
 ## Requirements
@@ -109,13 +109,6 @@ $ ./viad
 - irc.freenode.net
 - channel #viad
 - [webchat](https://webchat.freenode.net/?channels=viad)
-
-## Mailing lists
-
-- viad: discussion of viad and its packages.
-- viad-commits: readonly mail-out of source code changes.
-
-To subscribe to a given list, send email to list+subscribe@opensource.conformal.com
 
 ## Issue Tracker
 
