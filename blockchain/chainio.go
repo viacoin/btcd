@@ -1247,7 +1247,6 @@ func dbFetchHeaderByHeight(dbTx database.Tx, height int32) (*wire.BlockHeader, e
 	if err != nil {
 		return nil, err
 	}
-
 	return dbFetchHeaderByHash(dbTx, hash)
 }
 

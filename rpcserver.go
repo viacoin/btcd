@@ -1135,6 +1135,43 @@ func handleGetBlock(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (i
 		blockReply.RawTx = rawTxns
 	}
 
+	if blockHeader.IsAuxpow() && blockHeader.Auxpow != nil {
+		cbtx := viautil.NewTx(&blockHeader.Auxpow.CoinbaseTxn)
+		cbres, _ := createTxRawResult(params, cbtx.MsgTx(),
+			cbtx.Hash().String(), nil, "",
+			0, 0)
+		cbMerkleNames := make([]string, len(blockHeader.Auxpow.CoinbaseBranch.Branch))
+		for i, b := range blockHeader.Auxpow.CoinbaseBranch.Branch {
+			cbMerkleNames[i] = b.String()
+		}
+		bcbMerkleNames := make([]string, len(blockHeader.Auxpow.BlockchainBranch.Branch))
+		for i, b := range blockHeader.Auxpow.BlockchainBranch.Branch {
+			bcbMerkleNames[i] = b.String()
+		}
+		bh := blockHeader.Auxpow.ParentBlock
+		parent := btcjson.GetBlockHeaderVerboseResult{
+			Hash:          bh.BlockHash().String(),
+			Version:       bh.Version,
+			VersionHex:    fmt.Sprintf("%08x", bh.Version),
+			MerkleRoot:    bh.MerkleRoot.String(),
+			Time:          bh.Timestamp.Unix(),
+			Nonce:         uint64(bh.Nonce),
+			Bits:          strconv.FormatInt(int64(bh.Bits), 16),
+			Difficulty:    getDifficultyRatio(bh.Bits, params),
+			PreviousHash:  bh.PrevBlock.String(),
+		}
+		auxpow := btcjson.AuxpowResult{
+			Size:                 int32(blockHeader.Auxpow.SerializeSize()),
+			CoinbaseTx:           *cbres,
+			CoinbaseMerkleBranch: cbMerkleNames,
+			CoinbaseIndex:        blockHeader.Auxpow.CoinbaseBranch.Index,
+			ChainMerkleBranch:    bcbMerkleNames,
+			ChainIndex:           blockHeader.Auxpow.BlockchainBranch.Index,
+			ParentBlock:          parent,
+		}
+		blockReply.Auxpow = &auxpow
+	}
+
 	return blockReply, nil
 }
 

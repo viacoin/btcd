@@ -14,10 +14,28 @@ import (
 	"github.com/viacoin/viad/chaincfg/chainhash"
 )
 
-// MaxBlockHeaderPayload is the maximum number of bytes a block header can be.
+// MaxBlockHeaderPayloadNoAuxpow is the maximum number of bytes a block header can be.
 // Version 4 bytes + Timestamp 4 bytes + Bits 4 bytes + Nonce 4 bytes +
 // PrevBlock and MerkleRoot hashes.
-const MaxBlockHeaderPayload = 16 + (chainhash.HashSize * 2)
+const MaxBlockHeaderPayloadNoAuxpow = 16 + (chainhash.HashSize * 2)
+
+type MerkleBranch struct {
+	Branch []chainhash.Hash
+	Index int32
+}
+
+type Auxpow struct {
+	CoinbaseTxn MsgTx
+	ParentBlockHash chainhash.Hash
+	CoinbaseBranch MerkleBranch
+	BlockchainBranch MerkleBranch
+	ParentBlock BlockHeader
+}
+
+const BlockVersionAuxpow = 1 << 8
+const BlockVersionChainStart = 1 << 16
+
+var MergedMiningHeader = [4]byte{0xfa, 0xbe, 'm', 'm'}
 
 // BlockHeader defines information about a block and is used in the bitcoin
 // block (MsgBlock) and headers (MsgHeaders) messages.
@@ -40,11 +58,9 @@ type BlockHeader struct {
 
 	// Nonce used to generate the block.
 	Nonce uint32
-}
 
-// blockHeaderLen is a constant that represents the number of bytes for a block
-// header.
-const blockHeaderLen = 80
+	Auxpow *Auxpow
+}
 
 // BlockHash computes the block identifier hash for the given block header.
 func (h *BlockHeader) BlockHash() chainhash.Hash {
@@ -52,8 +68,8 @@ func (h *BlockHeader) BlockHash() chainhash.Hash {
 	// transactions.  Ignore the error returns since there is no way the
 	// encode could fail except being out of memory which would cause a
 	// run-time panic.
-	buf := bytes.NewBuffer(make([]byte, 0, MaxBlockHeaderPayload))
-	_ = writeBlockHeader(buf, 0, h)
+	buf := bytes.NewBuffer(make([]byte, 0, MaxBlockHeaderPayloadNoAuxpow))
+	_ = writeBlockHeaderNoAuxpow(buf, 0, h)
 
 	return chainhash.DoubleHashH(buf.Bytes())
 }
@@ -63,8 +79,8 @@ func (h *BlockHeader) BlockHash() chainhash.Hash {
 func (h *BlockHeader) PowHash() (*chainhash.Hash, error) {
 	var powHash chainhash.Hash
 
-	buf := bytes.NewBuffer(make([]byte, 0, MaxBlockHeaderPayload))
-	_ = writeBlockHeader(buf, 0, h)
+	buf := bytes.NewBuffer(make([]byte, 0, MaxBlockHeaderPayloadNoAuxpow))
+	_ = writeBlockHeaderNoAuxpow(buf, 0, h)
 
 	scryptHash, err := scrypt.Key(buf.Bytes(), buf.Bytes(), 1024, 1, 1, 32)
 	if err != nil {
@@ -73,6 +89,22 @@ func (h *BlockHeader) PowHash() (*chainhash.Hash, error) {
 	copy(powHash[:], scryptHash)
 
 	return &powHash, nil
+}
+
+func (h *BlockHeader) IsAuxpow() bool {
+	return h.Version & BlockVersionAuxpow != 0
+}
+
+func (h *BlockHeader) GetChainId() uint32 {
+	return uint32(h.Version / BlockVersionChainStart)
+}
+
+func (h *BlockHeader) SerializeSize() int {
+	if !h.IsAuxpow() || h.Auxpow == nil {
+		return MaxBlockHeaderPayloadNoAuxpow
+	} else {
+		return MaxBlockHeaderPayloadNoAuxpow + h.Auxpow.SerializeSize()
+	}
 }
 
 // BtcDecode decodes r using the bitcoin protocol encoding into the receiver.
@@ -133,15 +165,192 @@ func NewBlockHeader(version int32, prevHash, merkleRootHash *chainhash.Hash,
 // decoding block headers stored to disk, such as in a database, as opposed to
 // decoding from the wire.
 func readBlockHeader(r io.Reader, pver uint32, bh *BlockHeader) error {
-	return readElements(r, &bh.Version, &bh.PrevBlock, &bh.MerkleRoot,
+	err := readElements(r, &bh.Version, &bh.PrevBlock, &bh.MerkleRoot,
 		(*uint32Time)(&bh.Timestamp), &bh.Bits, &bh.Nonce)
+	if err != nil {
+		return err
+	}
+	return readAuxpow(r, pver,  bh)
+}
+
+func readAuxpow(r io.Reader, pver uint32, bh *BlockHeader) error {
+	if !bh.IsAuxpow() {
+		return nil
+	}
+
+	ap := Auxpow{}
+
+	err := ap.CoinbaseTxn.DeserializeNoWitness(r)
+	if err != nil {
+		return err
+	}
+
+	err = readElement(r, &ap.ParentBlockHash)
+	if err != nil {
+		return err
+	}
+
+	count, err := ReadVarInt(r, pver)
+	if err != nil {
+		return err
+	}
+
+	ap.CoinbaseBranch.Branch = make([]chainhash.Hash, count)
+	for i := uint64(0); i < count; i++ {
+		err = readElement(r, &ap.CoinbaseBranch.Branch[i])
+		if err != nil {
+			return err
+		}
+	}
+	err = readElement(r, &ap.CoinbaseBranch.Index)
+	if err != nil {
+		return err
+	}
+
+	count, err = ReadVarInt(r, pver)
+	if err != nil {
+		return err
+	}
+
+	ap.BlockchainBranch.Branch = make([]chainhash.Hash, count)
+	for i := uint64(0); i < count; i++ {
+		err = readElement(r, &ap.BlockchainBranch.Branch[i])
+		if err != nil {
+			return err
+		}
+	}
+	err = readElement(r, &ap.BlockchainBranch.Index)
+	if err != nil {
+		return err
+	}
+
+	err = readElements(r, &ap.ParentBlock.Version, &ap.ParentBlock.PrevBlock, &ap.ParentBlock.MerkleRoot,
+		(*uint32Time)(&ap.ParentBlock.Timestamp), &ap.ParentBlock.Bits, &ap.ParentBlock.Nonce)
+	if err != nil {
+		return err
+	}
+
+	bh.Auxpow = &ap
+	return nil
+}
+
+func writeBlockHeaderNoAuxpow(w io.Writer, pver uint32, bh *BlockHeader) error {
+	sec := uint32(bh.Timestamp.Unix())
+	return writeElements(w, bh.Version, &bh.PrevBlock, &bh.MerkleRoot,
+		sec, bh.Bits, bh.Nonce)
 }
 
 // writeBlockHeader writes a bitcoin block header to w.  See Serialize for
 // encoding block headers to be stored to disk, such as in a database, as
 // opposed to encoding for the wire.
 func writeBlockHeader(w io.Writer, pver uint32, bh *BlockHeader) error {
-	sec := uint32(bh.Timestamp.Unix())
-	return writeElements(w, bh.Version, &bh.PrevBlock, &bh.MerkleRoot,
-		sec, bh.Bits, bh.Nonce)
+	err := writeBlockHeaderNoAuxpow(w, pver, bh)
+	if err != nil {
+		return err
+	}
+	if bh.IsAuxpow() {
+		return writeAuxpow(w, pver, bh)
+	}
+	return nil
+}
+
+func writeAuxpow(w io.Writer, pver uint32, bh *BlockHeader) error {
+	if bh.Auxpow == nil {
+		return nil
+	}
+
+	err := bh.Auxpow.CoinbaseTxn.SerializeNoWitness(w)
+	if err != nil {
+		return err
+	}
+
+	err = writeElement(w, bh.Auxpow.ParentBlockHash)
+	if err != nil {
+		return err
+	}
+
+	count := uint64(len(bh.Auxpow.CoinbaseBranch.Branch))
+	err = WriteVarInt(w, pver, count)
+	if err != nil {
+		return err
+	}
+
+	for i := uint64(0); i < count; i++ {
+		err = writeElement(w, bh.Auxpow.CoinbaseBranch.Branch[i])
+		if err != nil {
+			return err
+		}
+	}
+	err = writeElement(w, bh.Auxpow.CoinbaseBranch.Index)
+	if err != nil {
+		return err
+	}
+
+	count = uint64(len(bh.Auxpow.BlockchainBranch.Branch))
+	err = WriteVarInt(w, pver, count)
+	if err != nil {
+		return err
+	}
+
+	for i := uint64(0); i < count; i++ {
+		err = writeElement(w, bh.Auxpow.BlockchainBranch.Branch[i])
+		if err != nil {
+			return err
+		}
+	}
+	err = writeElement(w, bh.Auxpow.BlockchainBranch.Index)
+	if err != nil {
+		return err
+	}
+
+	return writeBlockHeaderNoAuxpow(w, pver, &bh.Auxpow.ParentBlock)
+}
+
+func (b *MerkleBranch) Check(hash chainhash.Hash) chainhash.Hash {
+	if b.Index == -1 {
+		return chainhash.Hash{}
+	}
+
+	var scratch []byte
+	idx := b.Index
+	thash := hash
+
+	for _, it := range b.Branch {
+		if idx & 1 != 0 {
+			scratch = append(scratch, it[:]...)
+			scratch = append(scratch, thash[:]...)
+		} else {
+			scratch = append(scratch, thash[:]...)
+			scratch = append(scratch, it[:]...)
+		}
+		thash = chainhash.DoubleHashH(scratch)
+		scratch = nil
+		idx >>= 1
+	}
+	return thash
+}
+
+func(b *MerkleBranch) CheckAndRevert(hash chainhash.Hash) chainhash.Hash {
+	thash := b.Check(hash)
+	// revert
+	for i, j := 0, chainhash.HashSize - 1; i < j; i, j = i + 1, j - 1 {
+		thash[i], thash[j] = thash[j], thash[i]
+	}
+	return thash
+}
+
+func (a *Auxpow) SerializeSize() int {
+	return a.CoinbaseTxn.SerializeSizeStripped() +
+		chainhash.HashSize * (1 + len(a.CoinbaseBranch.Branch) + len(a.BlockchainBranch.Branch)) +
+		VarIntSerializeSize(uint64(len(a.CoinbaseBranch.Branch))) +
+		VarIntSerializeSize(uint64(len(a.BlockchainBranch.Branch))) +
+		4 * 2 +
+		MaxBlockHeaderPayloadNoAuxpow
+}
+
+func GetBlockHeaderSize(raw []byte) int {
+	pr := bytes.NewBuffer(raw)
+	h := BlockHeader{}
+	readBlockHeader(pr, 60002, &h)
+	return h.SerializeSize()
 }

@@ -13,19 +13,19 @@ import (
 const (
 	// vbLegacyBlockVersion is the highest legacy block version before the
 	// version bits scheme became active.
-	vbLegacyBlockVersion = 4
+	vbLegacyBlockVersion = 5
 
 	// vbTopBits defines the bits to set in the version to signal that the
 	// version bits scheme is being used.
-	vbTopBits = 0x20000000
+	vbTopBits = 0x80
 
 	// vbTopMask is the bitmask to use to determine whether or not the
 	// version bits scheme is in use.
-	vbTopMask = 0xe0000000
+	vbTopMask = 0x80
 
 	// vbNumBits is the total number of bits available for use with the
 	// version bits scheme.
-	vbNumBits = 29
+	vbNumBits = 7
 
 	// unknownVerNumToCheck is the number of previous blocks to consider
 	// when checking for a threshold of unknown block versions for the
@@ -283,7 +283,7 @@ func (b *BlockChain) warnUnknownVersions(node *blockNode) error {
 			return err
 		}
 		if expectedVersion > vbLegacyBlockVersion &&
-			(node.version & ^expectedVersion) != 0 {
+			(node.version & 0xff & ^expectedVersion) != 0 {
 
 			numUpgraded++
 		}

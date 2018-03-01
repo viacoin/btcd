@@ -25,7 +25,7 @@ const (
 
 	// blockHeaderOverhead is the max number of bytes it takes to serialize
 	// a block header and max possible transaction count.
-	blockHeaderOverhead = wire.MaxBlockHeaderPayload + wire.MaxVarIntPayload
+	//blockHeaderOverhead = wire.MaxBlockHeaderPayloadNoAuxpow + wire.MaxVarIntPayload
 
 	// CoinbaseFlags is added to the coinbase script of a generated block
 	// and is used to monitor BIP16 support as well as blocks that are
@@ -600,8 +600,10 @@ mempoolLoop:
 	// The starting block size is the size of the block header plus the max
 	// possible transaction count size, plus the size of the coinbase
 	// transaction.
-	blockWeight := uint32((blockHeaderOverhead * blockchain.WitnessScaleFactor) +
-		blockchain.GetTransactionWeight(coinbaseTx))
+	// Viacoin: like core client, blindly reserve 1000 for header + coinbase
+	//blockWeight := uint32((blockHeaderOverhead * blockchain.WitnessScaleFactor) +
+	//	blockchain.GetTransactionWeight(coinbaseTx))
+	blockWeight := uint32(1000)
 	blockSigOpCost := coinbaseSigOpCost
 	totalFees := int64(0)
 

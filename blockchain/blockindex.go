@@ -49,6 +49,7 @@ type blockNode struct {
 	nonce      uint32
 	timestamp  int64
 	merkleRoot chainhash.Hash
+	auxpow     *wire.Auxpow
 }
 
 // initBlockNode initializes a block node from the given header and height.  The
@@ -68,6 +69,7 @@ func initBlockNode(node *blockNode, blockHeader *wire.BlockHeader, height int32)
 		nonce:      blockHeader.Nonce,
 		timestamp:  blockHeader.Timestamp.Unix(),
 		merkleRoot: blockHeader.MerkleRoot,
+		auxpow:     blockHeader.Auxpow,
 	}
 }
 
@@ -97,6 +99,7 @@ func (node *blockNode) Header() wire.BlockHeader {
 		Timestamp:  time.Unix(node.timestamp, 0),
 		Bits:       node.bits,
 		Nonce:      node.nonce,
+		Auxpow:     node.auxpow,
 	}
 }
 

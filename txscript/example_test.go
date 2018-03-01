@@ -24,7 +24,7 @@ func ExamplePayToAddrScript() {
 	// which is useful to ensure the accuracy of the address and determine
 	// the address type.  It is also required for the upcoming call to
 	// PayToAddrScript.
-	addressStr := "12gpXQVcCL2qhTNQgyLVdCFG2Qs2px98nV"
+	addressStr := "VbgeS7f4c8w3mEGZRkz846a7iEA1Nd3wXd"
 	address, err := viautil.DecodeAddress(addressStr, &chaincfg.MainNetParams)
 	if err != nil {
 		fmt.Println(err)
@@ -75,7 +75,7 @@ func ExampleExtractPkScriptAddrs() {
 
 	// Output:
 	// Script Class: pubkeyhash
-	// Addresses: [12gpXQVcCL2qhTNQgyLVdCFG2Qs2px98nV]
+	// Addresses: [VbgeS7f4c8w3mEGZRkz846a7iEA1Nd3wXd]
 	// Required Signatures: 1
 }
 
