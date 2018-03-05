@@ -24,6 +24,16 @@ type GetBlockHeaderVerboseResult struct {
 	NextHash      string  `json:"nextblockhash,omitempty"`
 }
 
+type AuxpowResult struct {
+	Size int32                              `json:"size"`
+	CoinbaseTx TxRawResult                  `json:"coinbasetx"`
+	CoinbaseMerkleBranch []string           `json:"coinbaseMerkleBranch"`
+	CoinbaseIndex int32                     `json:"coinbaseIndex"`
+	ChainMerkleBranch []string              `json:"chainMerkleBranch"`
+	ChainIndex int32                        `json:"chainIndex"`
+	ParentBlock GetBlockHeaderVerboseResult `json:"parent_block"`
+}
+
 // GetBlockVerboseResult models the data from the getblock command when the
 // verbose flag is set.  When the verbose flag is not set, getblock returns a
 // hex-encoded string.
@@ -37,6 +47,7 @@ type GetBlockVerboseResult struct {
 	Version       int32         `json:"version"`
 	VersionHex    string        `json:"versionHex"`
 	MerkleRoot    string        `json:"merkleroot"`
+	Auxpow        *AuxpowResult `json:"auxpow,omitempty"`
 	Tx            []string      `json:"tx,omitempty"`
 	RawTx         []TxRawResult `json:"rawtx,omitempty"`
 	Time          int64         `json:"time"`

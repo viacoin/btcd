@@ -16,6 +16,7 @@ import (
 	"github.com/viacoin/viad/txscript"
 	"github.com/viacoin/viad/wire"
 	"github.com/viacoin/viautil"
+	"bytes"
 )
 
 const (
@@ -75,7 +76,7 @@ func isNullOutpoint(outpoint *wire.OutPoint) bool {
 // header. Blocks with version 2 and above satisfy this criteria. See BIP0034
 // for further information.
 func ShouldHaveSerializedBlockHeight(header *wire.BlockHeader) bool {
-	return header.Version >= serializedHeightVersion
+	return header.Version & 0xff >= serializedHeightVersion
 }
 
 // IsCoinBaseTx determines whether or not a transaction is a coinbase.  A coinbase
@@ -192,12 +193,47 @@ func isBIP0030Node(node *blockNode) bool {
 // At the target block generation rate for the main network, this is
 // approximately every 4 years.
 func CalcBlockSubsidy(height int32, chainParams *chaincfg.Params) int64 {
-	if chainParams.SubsidyReductionInterval == 0 {
-		return baseSubsidy
+	if chainParams.GenerateSupported { // regtest: use bitcoin schedule
+		if chainParams.SubsidyReductionInterval == 0 {
+			return baseSubsidy
+		}
+
+		// Equivalent to: baseSubsidy / 2^(height/subsidyHalvingInterval)
+		return baseSubsidy >> uint(height/chainParams.SubsidyReductionInterval)
+	}
+	// Viacoin schedule
+	var zeroRewardHeight int32
+	if chainParams.ReduceMinDifficulty {
+		zeroRewardHeight = 2001
+	} else {
+		zeroRewardHeight = 10001
+	}
+	rampHeight := zeroRewardHeight + 43200 // 4 periods of 10800
+
+	subsidy := int64(0)
+	if height == 0 {
+		subsidy = 0
+	} else if height == 1 {
+		subsidy = 10000000 * viautil.SatoshiPerBitcoin
+	} else if height <= zeroRewardHeight {
+		subsidy = 0
+	} else if height <= zeroRewardHeight + 10800 {
+		// first 10800 block after zero reward period is 10 coins per block
+		subsidy = 10 * viautil.SatoshiPerBitcoin
+	} else if height <= rampHeight {
+		// every 10800 blocks reduce nSubsidy from 8 to 6
+		subsidy = (8 - int64((height - zeroRewardHeight - 1) / 10800)) * viautil.SatoshiPerBitcoin
+	} else if height <= 1971000 {
+		subsidy = 5 * viautil.SatoshiPerBitcoin
+	} else {
+		halvings := uint32(height / chainParams.SubsidyReductionInterval)
+		if halvings <= 64 {
+			subsidy = 20 * viautil.SatoshiPerBitcoin
+			subsidy >>= halvings
+		}
 	}
 
-	// Equivalent to: baseSubsidy / 2^(height/subsidyHalvingInterval)
-	return baseSubsidy >> uint(height/chainParams.SubsidyReductionInterval)
+	return subsidy
 }
 
 // CheckTransactionSanity performs some preliminary checks on a transaction to
@@ -305,9 +341,8 @@ func CheckTransactionSanity(tx *viautil.Tx) error {
 // The flags modify the behavior of this function as follows:
 //  - BFNoPoWCheck: The check to ensure the block hash is less than the target
 //    difficulty is not performed.
-func checkProofOfWork(header *wire.BlockHeader, powLimit *big.Int, flags BehaviorFlags) error {
+func checkProofOfWork(header *wire.BlockHeader, powLimit *big.Int, target *big.Int, flags BehaviorFlags) error {
 	// The target difficulty must be larger than zero.
-	target := CompactToBig(header.Bits)
 	if target.Sign() <= 0 {
 		str := fmt.Sprintf("block target difficulty of %064x is too low",
 			target)
@@ -342,11 +377,65 @@ func checkProofOfWork(header *wire.BlockHeader, powLimit *big.Int, flags Behavio
 	return nil
 }
 
-// CheckProofOfWork ensures the block header bits which indicate the target
-// difficulty is in min/max range and that the block hash is less than the
-// target difficulty as claimed.
-func CheckProofOfWork(block *viautil.Block, powLimit *big.Int) error {
-	return checkProofOfWork(&block.MsgBlock().Header, powLimit, BFNone)
+func checkAuxpow(header *wire.BlockHeader) error {
+	if !IsCoinBaseTx(&header.Auxpow.CoinbaseTxn) {
+		return ruleError(ErrBadTxInput, "auxpow is not a generate")
+	}
+	nChainId := header.GetChainId()
+	if header.Auxpow.ParentBlock.GetChainId() == nChainId {
+		return ruleError(ErrBadMerkleRoot, "auxpow parent has our chain ID")
+	}
+	if len(header.Auxpow.BlockchainBranch.Branch) > 30 {
+		return ruleError(ErrTooManyTransactions, "auxpow chain merkle branch too long")
+	}
+
+	cbHash := header.Auxpow.CoinbaseBranch.Check(header.Auxpow.CoinbaseTxn.TxHash())
+	if !bytes.Equal(cbHash[:], header.Auxpow.ParentBlock.MerkleRoot[:]) {
+		return ruleError(ErrBadMerkleRoot, "auxpow merkle root incorrect")
+	}
+
+	rootHash := header.Auxpow.BlockchainBranch.CheckAndRevert(header.BlockHash())
+
+	script := header.Auxpow.CoinbaseTxn.TxIn[0].SignatureScript
+	pcHead := bytes.Index(script, wire.MergedMiningHeader[:])
+	pc := bytes.Index(script, rootHash[:])
+
+	if pcHead == -1 {
+		return ruleError(ErrBadTxInput, "auxpow MergedMiningHeader missing from parent coinbase")
+	}
+	if pc == -1 {
+		return ruleError(ErrBadMerkleRoot, "auxpow missing chain merkle root in parent coinbase")
+	}
+
+	if bytes.Index(script[pcHead+1:], wire.MergedMiningHeader[:]) != -1 {
+		return ruleError(ErrBadTxInput, "auxpow multiple merged mining headers in coinbase")
+	}
+
+	if pcHead+len(wire.MergedMiningHeader) != pc {
+		return ruleError(ErrBadTxInput, "auxpow merged mining header is not just before chain merkle root")
+	}
+
+	if len(script)-pc < 8 {
+		return ruleError(ErrBadTxInput, "auxpow missing chain merkle tree size and nonce in parent coinbase")
+	}
+
+	pc += len(rootHash)
+	nSize := binary.LittleEndian.Uint32(script[pc:pc+4])
+	if nSize != 1<<uint32(len(header.Auxpow.BlockchainBranch.Branch)) {
+		return ruleError(ErrBadTxInput, "auxpow merkle branch size does not match parent coinbase")
+	}
+
+	nNonce := binary.LittleEndian.Uint32(script[pc+4:pc+8])
+
+	nNonce = nNonce*1103515245 + 12345
+	nNonce += nChainId
+	nNonce = nNonce*1103515245 + 12345
+
+	if uint32(header.Auxpow.BlockchainBranch.Index) != nNonce%nSize {
+		return ruleError(ErrBadMerkleRoot, "auxpow wrong index")
+	}
+
+	return nil
 }
 
 // CountSigOps returns the number of signature operations for all transaction
@@ -439,7 +528,17 @@ func checkBlockHeaderSanity(header *wire.BlockHeader, powLimit *big.Int, timeSou
 	// Ensure the proof of work bits in the block header is in min/max range
 	// and the block hash is less than the target value described by the
 	// bits.
-	err := checkProofOfWork(header, powLimit, flags)
+	var err error
+	target := CompactToBig(header.Bits)
+	if header.IsAuxpow() && header.Auxpow != nil {
+		err = checkAuxpow(header)
+		if err != nil {
+			return err
+		}
+		err = checkProofOfWork(&header.Auxpow.ParentBlock, powLimit, target, flags)
+	} else {
+		err = checkProofOfWork(header, powLimit, target, flags)
+	}
 	if err != nil {
 		return err
 	}
@@ -712,9 +811,8 @@ func (b *BlockChain) checkBlockHeaderContext(header *wire.BlockHeader, prevNode 
 	// has upgraded.  These were originally voted on by BIP0034,
 	// BIP0065, and BIP0066.
 	params := b.chainParams
-	if header.Version < 2 && blockHeight >= params.BIP0034Height ||
-		header.Version < 3 && blockHeight >= params.BIP0066Height ||
-		header.Version < 4 && blockHeight >= params.BIP0065Height {
+	if header.Version & 0xff < 3 && blockHeight >= params.BIP0065Height ||
+		header.Version & 0xff < 4 && blockHeight >= params.BIP0066Height {
 
 		str := "new blocks with version %d are no longer valid"
 		str = fmt.Sprintf(str, header.Version)
@@ -1173,13 +1271,13 @@ func (b *BlockChain) checkConnectBlock(node *blockNode, block *viautil.Block, vi
 	// Enforce DER signatures for block versions 3+ once the historical
 	// activation threshold has been reached.  This is part of BIP0066.
 	blockHeader := &block.MsgBlock().Header
-	if blockHeader.Version >= 3 && node.height >= b.chainParams.BIP0066Height {
+	if blockHeader.Version & 0xff >= 4 && node.height >= b.chainParams.BIP0066Height {
 		scriptFlags |= txscript.ScriptVerifyDERSignatures
 	}
 
 	// Enforce CHECKLOCKTIMEVERIFY for block versions 4+ once the historical
 	// activation threshold has been reached.  This is part of BIP0065.
-	if blockHeader.Version >= 4 && node.height >= b.chainParams.BIP0065Height {
+	if blockHeader.Version & 0xff >= 3 && node.height >= b.chainParams.BIP0065Height {
 		scriptFlags |= txscript.ScriptVerifyCheckLockTimeVerify
 	}
 

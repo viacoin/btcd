@@ -24,16 +24,16 @@ var (
 
 	// mainPowLimit is the highest proof of work value a Bitcoin block can
 	// have for the main network.  It is the value 2^224 - 1.
-	mainPowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 224), bigOne)
+	mainPowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 233), bigOne)
 
 	// regressionPowLimit is the highest proof of work value a Bitcoin block
 	// can have for the regression test network.  It is the value 2^255 - 1.
-	regressionPowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 255), bigOne)
+	regressionPowLimit = new(big.Int).Sub(new(big.Int).Sub(new(big.Int).Lsh(bigOne, 256), bigOne), new(big.Int).Lsh(bigOne, 252))
 
 	// testNet3PowLimit is the highest proof of work value a Bitcoin block
 	// can have for the test network (version 3).  It is the value
 	// 2^224 - 1.
-	testNet3PowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 224), bigOne)
+	testNet3PowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 237), bigOne)
 
 	// simNetPowLimit is the highest proof of work value a Bitcoin block
 	// can have for the simulation test network.  It is the value 2^255 - 1.
@@ -236,10 +236,10 @@ var MainNetParams = Params{
 	GenesisBlock:             &genesisBlock,
 	GenesisHash:              &genesisHash,
 	PowLimit:                 mainPowLimit,
-	PowLimitBits:             0x207fffff,
-	BIP0034Height:            0,       // 000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8
-	BIP0065Height:            388381,  // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
-	BIP0066Height:            1411125, // 00000000000000000379eaa19dce8c9b722d46ae6a57c2f1a988119488b50931
+	PowLimitBits:             0x1e01ffff,
+	BIP0034Height:            0,       //
+	BIP0065Height:            598725,  // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
+	BIP0066Height:            1421641, // 00000000000000000379eaa19dce8c9b722d46ae6a57c2f1a988119488b50931
 	CoinbaseMaturity:         100,
 	SubsidyReductionInterval: 657000,
 	TargetTimespan:           time.Hour * 24 * 14, // 14 days
@@ -255,7 +255,29 @@ var MainNetParams = Params{
 		{40821, newHashFromStr("e0471675f9c98aa5ed321ed951d140d4603d96254a4ca9fbca07b8da5ee11954")},
 		{41433, newHashFromStr("627e18cc08a276282781705bac09508992dc8b665391edd7bde8a601f011954c")},
 		{44606, newHashFromStr("5ceeec38564a36ee3e1e5404970f5715efe0420e92c8e92bedfdfef782c49320")},
-		{3470255, newHashFromStr("cf8eb1b123884e9947482194e1f1e8ff4a4e9d4e92d9c9edccba71a10873de87")},
+		{200000, newHashFromStr("ccd02ffc90ee744cc90fa95aafb75e793e306dac533abf6162c4c5be3c7b80ad")},
+		{400000, newHashFromStr("7884c4cc5564a2414d6b9eaebd6cb2e4df47bcce7eb7f5c24b19f2d3bf961fd3")},
+		{600000, newHashFromStr("2385e13879304c4223b479267b3a8aca709b3556d0a00b431efc5b4174080d91")},
+		{800000, newHashFromStr("964a15c07915e3f1935e28d66f869fba7d63862ce1b494b3ebbb38bb16092f93")},
+		{1000000, newHashFromStr("1b187fb9e32e2ce80fc7a151254ef331b225a22dd2f2407d8e90b6276b252047")},
+		{1200000, newHashFromStr("db284e629a1ceb3cbf563293e23adecbe57bc0f3a6999b53598c5cdd5f6a74db")},
+		{1400000, newHashFromStr("a45e9c776a911978e22cc9c9d01f92c30836bffb6162cffdf96df75e21e1e97e")},
+		{1600000, newHashFromStr("26976af79d69b40c23d22a10c9b0440e7ab450dc390128996abdde5704caef81")},
+		{1800000, newHashFromStr("a6d494764b8dc454d1d5178fb4adef06784cc5713c91709f90d42d7515bcf2f6")},
+		{2000000, newHashFromStr("f363858fb9ef0ecb0c0ac1c690856129863ce65563581adef000c95733ca7fd9")},
+		{2200000, newHashFromStr("edb79185486f009823e3eb5a9e8ba877fd923ce278d2b235586cbde47534b1aa")},
+		{2400000, newHashFromStr("34f603a7dee67c2c298d607bb40b79a9641b0618671bcacf6c33c77a8f39b0ac")},
+		{2600000, newHashFromStr("162c711903353c479d2c4db85eaaa8e02335b337b3065076edf6315e54ecad90")},
+		{2800000, newHashFromStr("ab66f0ead8af2420ff28d23836fc3e6aaefb5b04d56ea8ea1e37dc289eb5f5ce")},
+		{3000000, newHashFromStr("6382616446e421105760a83ac69ddffd2b13678b3f12895fea2a4a830cbd5e11")},
+		{3200000, newHashFromStr("754d508c62c4a8d8c0abc7249f801b454aa016d628af0b18838ca31ea8c24799")},
+		{3470255, newHashFromStr("c3f75474ed8171bc303b4cd7ff269592534c0ca8d76fceed3fdbf8abf40d147a")},
+		{3600000, newHashFromStr("8bc0e14a2fc7eea4fd560fbdaa5e4162d352cc61766a2bb1b49218766646317e")},
+		{3800000, newHashFromStr("36a845e155c750762f16e5a95c91dbfce58e0dcf9ee2b5e5e4ffe38a0d609111")},
+		{4000000, newHashFromStr("9b1fa0fa4183c12480ff04aeaadc03051b9fe94d07d444fc454d58ed0b846534")},
+		{4200000, newHashFromStr("4ad4e7a68d2510fc28ede94a13bdd73cf321135b85168298b5c67bd63c700d92")},
+		{4400000, newHashFromStr("8a46b52e986f04b07e732caefdfb4c9083a9b88240cd7b3c0e48556c07b62f1a")},
+		{4600000, newHashFromStr("6ae5f0132613bc0a61167ff78ba3309f0f56e06960099b1a4c99658671abd8c2")},
 	},
 
 	// Consensus rule change deployments.
@@ -396,7 +418,7 @@ var TestNet3Params = Params{
 	GenesisBlock:             &testNet3GenesisBlock,
 	GenesisHash:              &testNet3GenesisHash,
 	PowLimit:                 testNet3PowLimit,
-	PowLimitBits:             0x1d00ffff,
+	PowLimitBits:             0x1e1fffff,
 	BIP0034Height:            21111,  // 0000000023b3a96d3484e5abb3755c413e7d41500f8e2a5c3f0dd01299cd8ef8
 	BIP0065Height:            581885, // 00000000007f6655f22f98e72ed80d8b06dc761d5da09df0fa1dc4be4f861eb6
 	BIP0066Height:            330776, // 000000002104c8c45e99a8853285a3b592602a3ccde2b832481da85e9e4ba182

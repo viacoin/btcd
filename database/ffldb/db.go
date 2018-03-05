@@ -34,8 +34,8 @@ const (
 
 	// blockHdrSize is the size of a block header.  This is simply the
 	// constant from wire and is only provided here for convenience since
-	// wire.MaxBlockHeaderPayload is quite long.
-	blockHdrSize = wire.MaxBlockHeaderPayload
+	// wire.MaxBlockHeaderPayloadNoAuxpow is quite long.
+	//blockHdrSize = wire.MaxBlockHeaderPayloadNoAuxpow
 
 	// blockHdrOffset defines the offsets into a block index row for the
 	// block header.
@@ -1264,7 +1264,8 @@ func (tx *transaction) FetchBlockHeader(hash *chainhash.Hash) ([]byte, error) {
 	// from there.
 	if idx, exists := tx.pendingBlocks[*hash]; exists {
 		blockBytes := tx.pendingBlockData[idx].bytes
-		return blockBytes[0:blockHdrSize:blockHdrSize], nil
+		size := wire.GetBlockHeaderSize(blockBytes)
+		return blockBytes[0:size:size], nil
 	}
 
 	// Fetch the block index row and slice off the header.  Notice the use
@@ -1274,7 +1275,8 @@ func (tx *transaction) FetchBlockHeader(hash *chainhash.Hash) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	endOffset := blockLocSize + blockHdrSize
+	size := wire.GetBlockHeaderSize(blockRow[blockLocSize:])
+	endOffset := blockLocSize + size
 	return blockRow[blockLocSize:endOffset:endOffset], nil
 }
 
@@ -1313,7 +1315,8 @@ func (tx *transaction) FetchBlockHeaders(hashes []chainhash.Hash) ([][]byte, err
 		// bytes from there.
 		if idx, exists := tx.pendingBlocks[*hash]; exists {
 			blkBytes := tx.pendingBlockData[idx].bytes
-			headers[i] = blkBytes[0:blockHdrSize:blockHdrSize]
+			size := wire.GetBlockHeaderSize(blkBytes)
+			headers[i] = blkBytes[0:size:size]
 			continue
 		}
 
@@ -1324,7 +1327,8 @@ func (tx *transaction) FetchBlockHeaders(hashes []chainhash.Hash) ([][]byte, err
 		if err != nil {
 			return nil, err
 		}
-		endOffset := blockLocSize + blockHdrSize
+		size := wire.GetBlockHeaderSize(blockRow[blockLocSize:])
+		endOffset := blockLocSize + size
 		headers[i] = blockRow[blockLocSize:endOffset:endOffset]
 	}
 
@@ -1663,7 +1667,7 @@ func serializeBlockRow(blockLoc blockLocation, blockHdr []byte) []byte {
 	//
 	//  [0:blockLocSize]                          Block location
 	//  [blockLocSize:blockLocSize+blockHdrSize]  Block header
-	serializedRow := make([]byte, blockLocSize+blockHdrSize)
+	serializedRow := make([]byte, blockLocSize+len(blockHdr))
 	copy(serializedRow, serializeBlockLoc(blockLoc))
 	copy(serializedRow[blockHdrOffset:], blockHdr)
 	return serializedRow
@@ -1706,7 +1710,8 @@ func (tx *transaction) writePendingAndCommit() error {
 		// includes the location information needed to locate the block
 		// on the filesystem as well as the block header since they are
 		// so commonly needed.
-		blockHdr := blockData.bytes[0:blockHdrSize]
+		size := wire.GetBlockHeaderSize(blockData.bytes)
+		blockHdr := blockData.bytes[0:size]
 		blockRow := serializeBlockRow(location, blockHdr)
 		err = tx.blockIdxBucket.Put(blockData.hash[:], blockRow)
 		if err != nil {

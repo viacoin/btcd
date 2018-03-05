@@ -844,7 +844,8 @@ func (b *blockManager) handleHeadersMsg(hmsg *headersMsg) {
 		} else {
 			bmgrLog.Warnf("Received block header that does not "+
 				"properly connect to the chain from peer %s "+
-				"-- disconnecting", peer.Addr())
+				"prevNode %s prevHash %s"+
+				"-- disconnecting", prevNode.hash.String(), blockHeader.PrevBlock.String(), peer.Addr())
 			peer.Disconnect()
 			return
 		}

@@ -2056,6 +2056,10 @@ func (p *Peer) start() error {
 	}
 	log.Debugf("Connected to %s", p.Addr())
 
+	// Send our verack message now that the IO processing machinery has started.
+	// Viacoin: queue it before installing async handlers to ensure it is the first message to avoid ban
+	p.QueueMessage(wire.NewMsgVerAck(), nil)
+
 	// The protocol has been negotiated successfully so start processing input
 	// and output messages.
 	go p.stallHandler()
@@ -2064,8 +2068,6 @@ func (p *Peer) start() error {
 	go p.outHandler()
 	go p.pingHandler()
 
-	// Send our verack message now that the IO processing machinery has started.
-	p.QueueMessage(wire.NewMsgVerAck(), nil)
 	return nil
 }
 

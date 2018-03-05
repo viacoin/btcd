@@ -213,19 +213,68 @@ func (b *BlockChain) findPrevTestNetDifficulty(startNode *blockNode) uint32 {
 	return lastBits
 }
 
-// calcNextRequiredDifficulty calculates the required difficulty for the block
-// after the passed previous block node based on the difficulty retarget rules.
-// This function differs from the exported CalcNextRequiredDifficulty in that
-// the exported version uses the current best chain as the previous block node
-// while this function accepts any block node.
-func (b *BlockChain) calcNextRequiredDifficulty(lastNode *blockNode, newBlockTime time.Time) (uint32, error) {
-	// Genesis block.
-	if lastNode == nil {
-		return b.chainParams.PowLimitBits, nil
+func (b *BlockChain) antiGravityWave(version int, lastNode *blockNode) (uint32, error) {
+	var pastBlocksMin, pastBlocksMax int
+	if version == 1 {
+		pastBlocksMax, pastBlocksMin = 24, 24
+	} else {
+		pastBlocksMax, pastBlocksMin = 72, 72
 	}
 
-	// Return the previous block's difficulty requirements if this block
-	// is not at a difficulty retarget interval.
+	if lastNode.height < int32(pastBlocksMax) {
+		return 0, AssertError("antiGravityWave used at premature height")
+	}
+
+	lastBlockTime, actualTimespan := int64(0), int64(0)
+	var pastDifficultyAverage, pastDifficultyAveragePrev *big.Int
+
+	blockReading := lastNode
+	countBlocks := 0
+	for i := 1; i <= pastBlocksMax; i++ {
+		countBlocks++
+		if countBlocks <= pastBlocksMin {
+			if countBlocks == 1 {
+				pastDifficultyAverage = CompactToBig(blockReading.bits)
+			} else {
+				pastDifficultyAverage.Mul(pastDifficultyAveragePrev, big.NewInt(int64(countBlocks))).
+					Add(pastDifficultyAverage, CompactToBig(blockReading.bits)).
+					Div(pastDifficultyAverage, big.NewInt(int64(countBlocks) + 1))
+			}
+			pastDifficultyAveragePrev = pastDifficultyAverage
+		}
+
+		if lastBlockTime > 0 {
+			actualTimespan += lastBlockTime - blockReading.timestamp
+		}
+		lastBlockTime = blockReading.timestamp
+		blockReading = blockReading.parent
+	}
+	if version == 2 {
+		countBlocks--
+	}
+	targetTimespan := int64(countBlocks) * int64(b.chainParams.TargetTimePerBlock / time.Second)
+	var div int64
+	if version == 1 {
+		div = 3
+	} else {
+		div = 2
+	}
+	if actualTimespan < targetTimespan / div {
+		actualTimespan = targetTimespan / div
+	}
+	if actualTimespan > targetTimespan * div {
+		actualTimespan = targetTimespan * div
+	}
+	newTarget := new(big.Int).Mul(pastDifficultyAverage, big.NewInt(actualTimespan))
+	newTarget.Div(newTarget, big.NewInt(targetTimespan))
+	if newTarget.Cmp(b.chainParams.PowLimit) > 0 {
+		newTarget.Set(b.chainParams.PowLimit)
+	}
+	return BigToCompact(newTarget), nil
+}
+
+func (b *BlockChain) nextWorkRequiredV1(lastNode *blockNode, newBlockTime time.Time) (uint32, error) {
+
 	if (lastNode.height+1)%b.blocksPerRetarget != 0 {
 		// For networks that support it, allow special reduction of the
 		// required difficulty once too much time has elapsed without
@@ -250,6 +299,9 @@ func (b *BlockChain) calcNextRequiredDifficulty(lastNode *blockNode, newBlockTim
 		// return the previous block's difficulty requirements.
 		return lastNode.bits, nil
 	}
+
+	// Return the previous block's difficulty requirements if this block
+	// is not at a difficulty retarget interval.
 
 	// Viacoin: This fixes an issue where 51% can change difficulty at will.
 	// Go back the full period unless it's the first retarget
@@ -305,6 +357,32 @@ func (b *BlockChain) calcNextRequiredDifficulty(lastNode *blockNode, newBlockTim
 		b.chainParams.TargetTimespan)
 
 	return newTargetBits, nil
+
+
+}
+
+// calcNextRequiredDifficulty calculates the required difficulty for the block
+// after the passed previous block node based on the difficulty retarget rules.
+// This function differs from the exported CalcNextRequiredDifficulty in that
+// the exported version uses the current best chain as the previous block node
+// while this function accepts any block node.
+func (b *BlockChain) calcNextRequiredDifficulty(lastNode *blockNode, newBlockTime time.Time) (uint32, error) {
+	// Genesis block.
+	if lastNode == nil {
+		return b.chainParams.PowLimitBits, nil
+	}
+
+	if b.chainParams.GenerateSupported { // regtest
+		return lastNode.bits, nil
+	}
+
+	if lastNode.height+1 >= 451000 || (b.chainParams.MinDiffReductionTime != 0 && lastNode.height+1 >= 300000) {
+		return b.antiGravityWave(2, lastNode)
+	} else if lastNode.height+1 >= 3600 {
+		return b.antiGravityWave(1, lastNode)
+	} else {
+		return b.nextWorkRequiredV1(lastNode, newBlockTime)
+	}
 }
 
 // CalcNextRequiredDifficulty calculates the required difficulty for the block
